@@ -6,11 +6,11 @@ module top(CLK_50, CLK_inter, SW, CM, LED);
     inout [7:0] CM;
 	output [7:0] LED;
 
-
     // State Definitions
     localparam IDLE = 2'b00;
     localparam SEND = 2'b01;
     localparam WAIT_REPLY = 2'b10;
+    localparam DONE = 2'b11;
 
     // State Machine Variables
     reg [1:0] current_state, next_state;
@@ -24,14 +24,18 @@ module top(CLK_50, CLK_inter, SW, CM, LED);
             IDLE: begin
                 if (data_in == 8'hCC)
                     next_state = SEND;
+                else
+                    next_state = IDLE;
             end
             SEND: begin
                 next_state = WAIT_REPLY;
             end
             WAIT_REPLY: begin
-                if ((data_in == 8'hA5) || (data_in == 8'h5A))
+                if (data_in == 8'hA5)
+                    next_state = DONE;
+                else if (data_in == 8'h5A)
                     next_state = SEND;
-                else:
+                else
                     next_state = WAIT_REPLY;
             end
             default: begin

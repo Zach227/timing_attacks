@@ -4,6 +4,8 @@
 #define YES 0xA5
 #define NO 0x5A
 
+#define SECRET_CODE 0x42
+
 int main() {
   haha_uart_init();
   haha_inter_init();
@@ -12,11 +14,15 @@ int main() {
   haha_send_to_fpga(BEGIN);
 
   while(1) {
-    uint8_t response = haha_receive_from_fpga();
+    uint8_t guess = haha_receive_from_fpga();
     haha_uart_print_str("Received from FPGA: ");
-    haha_uart_print_u8_hex(response);
+    haha_uart_print_u8_hex(guess);
     haha_uart_print_str("\r\n");
-    haha_send_to_fpga(YES);
+    if (guess == SECRET_CODE) {
+      haha_send_to_fpga(YES);
+    }
+    else {
+      haha_send_to_fpga(NO);
+    }
   }
-
 }
