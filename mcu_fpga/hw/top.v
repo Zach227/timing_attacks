@@ -6,11 +6,21 @@ module top(CLK_50, CLK_inter, SW, CM, LED);
     inout [7:0] CM;
 	output [7:0] LED;
 
-    // State Definitions
-    localparam IDLE = 2'b00;
-    localparam SEND = 2'b01;
-    localparam WAIT_REPLY = 2'b10;
-    localparam DONE = 2'b11;
+
+    // Protocol Bytes
+    localparam START_BYTE      = 8'h01;
+    localparam BEGIN_GUESSING  = 8'h02;
+    localparam YES             = 8'h03;
+    localparam NO              = 8'h04;
+    localparam END_BYTE        = 8'h05;
+
+    // FSM States
+    localparam IDLE        = 3'b000;
+    localparam SEND_START  = 3'b001;
+    localparam SEND_DATA   = 3'b010;
+    localparam SEND_END    = 3'b011;
+    localparam WAIT_REPLY  = 3'b100;
+    localparam DONE        = 3'b101;
 
     // State Machine Variables
     reg [1:0] current_state, next_state;
@@ -46,7 +56,7 @@ module top(CLK_50, CLK_inter, SW, CM, LED);
 
     // State Machine Outputs
     assign drive_en = (current_state == SEND);
-    assign LED = data_in;
+    assign LED = (current_state == DONE) ? data_out : 8'h00;
 
     // State Register and Data counter
     always @(posedge CLK_50) begin
