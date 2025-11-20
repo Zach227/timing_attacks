@@ -32,6 +32,7 @@ void haha_inter_clk_neg(void);
 // Receive a byte of data from the FPGA by toggling
 // the 8-bit CM bus clock and reading the data lines
 uint8_t haha_receive_from_fpga(void);
+void haha_send_to_fpga(uint8_t data);
 
 void haha_uart_init();
 void haha_uart_print_char(char c);
