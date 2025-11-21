@@ -1,0 +1,20 @@
+[
+ {
+  "InstFile" : "/auto/fsi/zd227/timing_attacks/mcu_fpga/hw/gowin_proj/src/top2.v",
+  "InstLine" : 1,
+  "InstName" : "top",
+  "ModuleFile" : "/auto/fsi/zd227/timing_attacks/mcu_fpga/hw/gowin_proj/src/top2.v",
+  "ModuleLine" : 1,
+  "ModuleName" : "top",
+  "SubInsts" : [
+   {
+    "InstFile" : "/auto/fsi/zd227/timing_attacks/mcu_fpga/hw/gowin_proj/src/top2.v",
+    "InstLine" : 76,
+    "InstName" : "cmb_0",
+    "ModuleFile" : "/auto/fsi/zd227/timing_attacks/mcu_fpga/hw/gowin_proj/src/cm_bus_if.v.v",
+    "ModuleLine" : 8,
+    "ModuleName" : "cm_bus_if"
+   }
+  ]
+ }
+]

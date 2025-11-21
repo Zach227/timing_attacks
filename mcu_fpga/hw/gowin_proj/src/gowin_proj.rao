@@ -1,0 +1,126 @@
+<?xml version="1" encoding="UTF-8"?>
+<GAO_CONFIG>
+    <Version>3.0</Version>
+    <Mode>Lite</Mode>
+    <AoCore_Lite index="0" sample_clock="CLK_50" trig_type="0" capture_amount="1024" implemention="0" input_register_enabled="0" capture_init_data_enabled="0" module_name="top">
+        <SignalList>
+            <Bus capture_enable="true" name="SW[0:0]">
+                <Signal>SW[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="CM[7:0]">
+                <Signal>CM[7]</Signal>
+                <Signal>CM[6]</Signal>
+                <Signal>CM[5]</Signal>
+                <Signal>CM[4]</Signal>
+                <Signal>CM[3]</Signal>
+                <Signal>CM[2]</Signal>
+                <Signal>CM[1]</Signal>
+                <Signal>CM[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="LED[7:0]">
+                <Signal>LED[7]</Signal>
+                <Signal>LED[6]</Signal>
+                <Signal>LED[5]</Signal>
+                <Signal>LED[4]</Signal>
+                <Signal>LED[3]</Signal>
+                <Signal>LED[2]</Signal>
+                <Signal>LED[1]</Signal>
+                <Signal>LED[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="current_state[3:0]">
+                <Signal>current_state[3]</Signal>
+                <Signal>current_state[2]</Signal>
+                <Signal>current_state[1]</Signal>
+                <Signal>current_state[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="next_state[3:0]">
+                <Signal>next_state[3]</Signal>
+                <Signal>next_state[2]</Signal>
+                <Signal>next_state[1]</Signal>
+                <Signal>next_state[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="data_out[7:0]">
+                <Signal>data_out[7]</Signal>
+                <Signal>data_out[6]</Signal>
+                <Signal>data_out[5]</Signal>
+                <Signal>data_out[4]</Signal>
+                <Signal>data_out[3]</Signal>
+                <Signal>data_out[2]</Signal>
+                <Signal>data_out[1]</Signal>
+                <Signal>data_out[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="guess_byte[7:0]">
+                <Signal>guess_byte[7]</Signal>
+                <Signal>guess_byte[6]</Signal>
+                <Signal>guess_byte[5]</Signal>
+                <Signal>guess_byte[4]</Signal>
+                <Signal>guess_byte[3]</Signal>
+                <Signal>guess_byte[2]</Signal>
+                <Signal>guess_byte[1]</Signal>
+                <Signal>guess_byte[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="data_in[7:0]">
+                <Signal>data_in[7]</Signal>
+                <Signal>data_in[6]</Signal>
+                <Signal>data_in[5]</Signal>
+                <Signal>data_in[4]</Signal>
+                <Signal>data_in[3]</Signal>
+                <Signal>data_in[2]</Signal>
+                <Signal>data_in[1]</Signal>
+                <Signal>data_in[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="cmb_0/data_out[7:0]">
+                <Signal>cmb_0/data_out[7]</Signal>
+                <Signal>cmb_0/data_out[6]</Signal>
+                <Signal>cmb_0/data_out[5]</Signal>
+                <Signal>cmb_0/data_out[4]</Signal>
+                <Signal>cmb_0/data_out[3]</Signal>
+                <Signal>cmb_0/data_out[2]</Signal>
+                <Signal>cmb_0/data_out[1]</Signal>
+                <Signal>cmb_0/data_out[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="cmb_0/data_in[7:0]">
+                <Signal>cmb_0/data_in[7]</Signal>
+                <Signal>cmb_0/data_in[6]</Signal>
+                <Signal>cmb_0/data_in[5]</Signal>
+                <Signal>cmb_0/data_in[4]</Signal>
+                <Signal>cmb_0/data_in[3]</Signal>
+                <Signal>cmb_0/data_in[2]</Signal>
+                <Signal>cmb_0/data_in[1]</Signal>
+                <Signal>cmb_0/data_in[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="cmb_0/cm[7:0]">
+                <Signal>cmb_0/cm[7]</Signal>
+                <Signal>cmb_0/cm[6]</Signal>
+                <Signal>cmb_0/cm[5]</Signal>
+                <Signal>cmb_0/cm[4]</Signal>
+                <Signal>cmb_0/cm[3]</Signal>
+                <Signal>cmb_0/cm[2]</Signal>
+                <Signal>cmb_0/cm[1]</Signal>
+                <Signal>cmb_0/cm[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="cmb_0/out_reg[7:0]">
+                <Signal>cmb_0/out_reg[7]</Signal>
+                <Signal>cmb_0/out_reg[6]</Signal>
+                <Signal>cmb_0/out_reg[5]</Signal>
+                <Signal>cmb_0/out_reg[4]</Signal>
+                <Signal>cmb_0/out_reg[3]</Signal>
+                <Signal>cmb_0/out_reg[2]</Signal>
+                <Signal>cmb_0/out_reg[1]</Signal>
+                <Signal>cmb_0/out_reg[0]</Signal>
+            </Bus>
+            <Signal capture_enable="true">CLK_50</Signal>
+            <Signal capture_enable="true">CLK_inter</Signal>
+            <Signal capture_enable="true">drive_en</Signal>
+            <Signal capture_enable="true">clk_inter_d</Signal>
+            <Signal capture_enable="true">clk_rise</Signal>
+            <Signal capture_enable="true">clk_fall</Signal>
+            <Signal capture_enable="true">saw_rise</Signal>
+            <Signal capture_enable="true">full_pulse</Signal>
+            <Signal capture_enable="true">cmb_0/clk</Signal>
+            <Signal capture_enable="true">cmb_0/rst</Signal>
+            <Signal capture_enable="true">cmb_0/drive_en</Signal>
+        </SignalList>
+    </AoCore_Lite>
+    <GAO_ID>1111001111000010</GAO_ID>
+</GAO_CONFIG>
