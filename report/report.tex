@@ -35,7 +35,7 @@
     Brigham Young University\\
     450 Engineering Building\\
     Provo, UT 84602 \\
-    \{TODO, jacobb00, jgoeders\}@byu.edu
+    \{zd227, jacobb00, jgoeders\}@byu.edu
 }
 
 \maketitle
@@ -50,11 +50,21 @@ timing attack, FPGA
 
 \section{Introduction}
 
-This is a dummy citation to make sure it's working \cite{doe2015guide}.
+% brief intro to timing attacks
+Timing attacks are a type of side-channel attack.
+
+% our goal 
+To further learn about timing attacks, we implemented two simple attacks that exploit a non-constant compare function to extract a secret key.
+
+% our inspiration
+Our source of inspiration is Joe Grand, who demonstrated a simple timing attack \cite{video_key}. % Todo explain the timing attack he did
 
 \section{FPGA to MCU}
 
 \section{Human to FPGA}
+
+The purpose of the human-to-FPGA timing attack is to see if it's possible to carry out a toy timing attack using a human and FPGA. % this sentence is kinda dumb
+The non-constant compare function is implemented on an FPGA and we manually use an oscilloscope to measure time for each compare.
 
 \section{Conclusion}
 
