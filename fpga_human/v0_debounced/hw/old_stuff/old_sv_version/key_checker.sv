@@ -11,23 +11,28 @@
 module key_checker(
     input logic clk, rst,
     input logic [2:0] btn,
+    input logic restart,
     input logic [7:0] key,
-    output logic success, fail
+    output logic success, fail,
+    output logic in_receive, in_compare, in_done,
+    output logic btn_vals_out
 );
 
-    // states
+    // states: wait receive, wait check, done
     localparam WAIT_RECEIVE_ST = 2'b00;
     localparam WAIT_CHECK_ST = 2'b01;
     localparam DONE_ST = 2'b10;
 
     logic [1:0] current_st;
-    logic [7:0] btn_vals;
+    logic [1:0] btn_vals [0:3];
     logic receive_done;
+    logic internal_restart;
     logic enable_compare;
 
     assign in_receive = current_st == WAIT_RECEIVE_ST;
     assign in_compare = current_st == WAIT_CHECK_ST;
     assign in_done = current_st == DONE_ST;
+
 
     receive_buttons #(
         .CLK_FREQUENCY(50000000),
@@ -35,6 +40,7 @@ module key_checker(
     receive_buttons (
         .clk(clk),
         .reset(rst),
+        .restart(internal_restart),
         .btns_in(btn),
         .done(receive_done),
         .btns_out(btn_vals) // size 4 array of 2 bit values 
@@ -44,33 +50,51 @@ module key_checker(
         .clk(clk),
         .rst(rst),
         .enable(enable_compare),
+        .restart(internal_restart),
         .correct_value(key),
-        .guessed_value(btn_vals),
+        .guessed_value({btn_vals[3], btn_vals[2], btn_vals[1], btn_vals[0]}),
         .success(success),
         .fail(fail)
     );
 
+    assign btn_vals_out = (btn_vals[3] | btn_vals[2] | btn_vals[1] | btn_vals[0]);
+
     always_ff @(posedge clk) begin
         if (rst) begin
             current_st <= WAIT_RECEIVE_ST;
+            internal_restart <= 0;
             enable_compare <= 0;
         end
         else begin
             if (current_st == WAIT_RECEIVE_ST) begin
+                internal_restart <= 0;
                 if (receive_done) begin
                     current_st <= WAIT_CHECK_ST;
                     enable_compare <= 1;
                 end
             end
             if (current_st == WAIT_CHECK_ST) begin
-                if (success | fail) begin
+                if (success) begin
                     current_st <= DONE_ST;
+                    enable_compare <= 0;
+                end
+                else if (fail) begin
+                    current_st <= WAIT_RECEIVE_ST;
+                    internal_restart <= 1;
                     enable_compare <= 0;
                 end
             end
             if (current_st == DONE_ST) begin
+                if (restart) begin
+                    current_st <= WAIT_RECEIVE_ST;
+                    internal_restart <= 1;
+                end
+
             end
+            
         end
+
     end
+
 
 endmodule

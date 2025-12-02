@@ -1,4 +1,4 @@
-module top(CLK_50, CLK_OSC_2, CM, CLK_inter, SPI_SS, SPI_MISO, SPI_SCLK, SPI_MOSI, FLASH_WP_n, FLASH_HOLD_n, LED, SEG, KEY, SW);
+module top(CLK_50, CLK_OSC_2, CM, CLK_inter, SPI_SS, SPI_MISO, SPI_SCLK, SPI_MOSI, FLASH_WP_n, FLASH_HOLD_n, LED, SEG, KEY, SW, GPIO);
 	/* FPGA Clocks */
 	input CLK_50;
 	input CLK_OSC_2;
@@ -28,7 +28,7 @@ module top(CLK_50, CLK_OSC_2, CM, CLK_inter, SPI_SS, SPI_MISO, SPI_SCLK, SPI_MOS
 	
 	
 	/* FPGA GPIO - Add GPIOs based on HaHa manual*/
-
+    output [1:0] GPIO;
 
 	
 	/* Add the remaining circuitry from here*/
@@ -42,13 +42,17 @@ module top(CLK_50, CLK_OSC_2, CM, CLK_inter, SPI_SS, SPI_MISO, SPI_SCLK, SPI_MOS
     assign LED[7] = reset;
 	assign LED[6:2] = 0;
 
+    assign GPIO[0] = success | fail;
+//    assign GPIO[1] = KEY[2] | KEY[1] | KEY[0];
+
     key_checker key_checker (
         .clk(CLK_50),
         .rst(reset),
         .btn(KEY),
         .key(~SW[7:0]),
         .success(success), 
-        .fail(fail)
+        .fail(fail),
+        .in_compare(GPIO[1])
     );
 
 endmodule
