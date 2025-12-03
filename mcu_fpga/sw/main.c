@@ -72,6 +72,3 @@ int main() {
     }
   }
 }
-
-
-//ERROR (EX0320) : Can not find GAO/GVIO specified net "out_reg[7]" in netlist "cm_bus_if"("/auto/fsi/zd227/timing_attacks/mcu_fpga/hw/gowin_proj/src/cm_bus_if.v.v":1)
