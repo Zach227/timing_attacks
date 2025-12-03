@@ -1,27 +1,11 @@
 module cm_bus_if (
-    input        clk,
-    input        rst,
-    input  [7:0] data_out,    // byte you want to send
-    input        drive_en,    // 1 = FPGA drives bus, 0 = FPGA listens
-    output [7:0] data_in,     // byte received from MCU
-    inout  [7:0] cm           // shared bus
+    input        drive_en,
+    input  [7:0] data_out,
+    inout  [7:0] cm,
+    output [7:0] data_in
 );
 
-    // Registered output for clean bus timing
-    reg [7:0] out_reg;
-    always @(posedge clk) begin
-        if (rst)
-            out_reg <= 8'h00;
-        else
-            out_reg <= data_out;
-    end
-
-    // Tri-state driver:
-    assign cm = drive_en ? out_reg : 8'bZ;
-
-    // Read MCU data when NOT driving
+    assign cm      = drive_en ? data_out : 8'bZ;
     assign data_in = cm;
 
 endmodule
-
-

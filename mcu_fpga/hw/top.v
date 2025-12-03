@@ -1,146 +1,180 @@
 
-module top(CLK_50, CLK_inter, SW, CM, LED);
-    input CLK_50;
-    input CLK_inter;
-    input [0:0] SW;
-    inout [7:0] CM;
-	output [7:0] LED;
+module top(
+    input  wire        CLK_50,
+    input  wire        CLK_inter,   // MCU-driven interconnect clock
+    input  wire [0:0]  SW,          // active-high reset
+    inout  wire [7:0]  CM,          // bidirectional bus
+    output wire [7:0]  LED
+);
 
+    // ----------------------------------------
+    // Protocol bytes
+    // ----------------------------------------
+    localparam [7:0] START_BYTE         = 8'h01;
+    localparam [7:0] BEGIN_GUESSING     = 8'h02;
+    localparam [7:0] YES                = 8'h03;
+    localparam [7:0] NO                 = 8'h04;
+    localparam [7:0] END_BYTE           = 8'h05;
+    localparam [7:0] START_GUESS_RANGE  = 8'h06;
 
-    //-----------------------------------------
-    // Protocol Bytes
-    //-----------------------------------------
-    localparam START_BYTE      = 8'h01;
-    localparam BEGIN_GUESSING  = 8'h02;
-    localparam YES             = 8'h03;
-    localparam NO              = 8'h04;
-    localparam END_BYTE        = 8'h05;
+    // ----------------------------------------
+    // FSM states (4-bit)
+    // ----------------------------------------
+    localparam [3:0]
+        IDLE              = 4'h0,
+        WAIT_BEFORE_START = 4'h1,
+        SEND_START        = 4'h2,
+        SEND_DATA         = 4'h3,
+        SEND_END          = 4'h4,
+        SHORT_DELAY       = 4'h5,
+        WAIT_REPLY        = 4'h6;
 
-    //-----------------------------------------
-    // FSM States
-    //-----------------------------------------
-    localparam IDLE              = 4'h0;
-    localparam WAIT_BEFORE_START = 4'h1;
-    localparam SEND_START        = 4'h2;
-    localparam SEND_DATA         = 4'h4;
-    localparam SEND_END          = 4'h6;
-    localparam WAIT_REPLY        = 4'h8;
+    // ----------------------------------------
+    // Registers / wires
+    // ----------------------------------------
+    reg  [3:0] current_state, next_state;
+    reg  [7:0] data_out;
+    reg        drive_en;
+    reg  [7:0] guess_byte;
 
-    //-----------------------------------------
-    // Registers
-    //-----------------------------------------
-    reg [3:0] current_state, next_state;
-    reg [7:0] data_out;
-    reg drive_en;
-    reg [7:0] guess_byte = 8'h05;
-
-    //-----------------------------------------
-    // Wires
-    //-----------------------------------------
     wire [7:0] data_in;
 
+    // Show current guess on LEDs for debug
+    assign LED = guess_byte;
 
-    //-----------------------------------------
-    // Guess counter
-    //-----------------------------------------
+    // ----------------------------------------
+    // Guess counter: initialize and increment only on MCU NO reply
+    // ----------------------------------------
     always @(posedge CLK_50) begin
         if (SW[0]) begin
-            guess_byte <= 8'h05;
-        end 
-        else if (current_state == WAIT_REPLY && data_in == NO) begin
-            guess_byte <= (guess_byte == 8'hFF) ? 8'h05 : guess_byte + 1;
+            guess_byte <= START_GUESS_RANGE; // start at 0x05 per your design
+        end else begin
+            // increment only when we are in WAIT_REPLY and MCU replied NO
+            if (current_state == WAIT_REPLY && data_in == NO) begin
+                if (guess_byte == 8'hFF)
+                    guess_byte <= START_GUESS_RANGE;
+                else
+                    guess_byte <= guess_byte + 1'b1;
+            end
         end
     end
 
-    //-----------------------------------------
-    // Detect rising+falling edge of CLK_inter
-    //-----------------------------------------
-    reg clk_inter_d;
-    always @(posedge CLK_50) begin
-        clk_inter_d <= CLK_inter;
-    end
-
-    wire clk_rise = (CLK_inter & ~clk_inter_d);
-    wire clk_fall = (~CLK_inter & clk_inter_d);
-
-    reg saw_rise;
-    wire full_pulse = saw_rise && clk_fall;
+    // ----------------------------------------
+    // Detect full MCU clock pulse (rising then falling)
+    // sample clk edges using CLK_50 domain
+    // ----------------------------------------
+    reg clk_inter_sync0, clk_inter_sync1;
 
     always @(posedge CLK_50) begin
-        if (SW[0]) begin
-            saw_rise <= 0;
-        end 
-        else begin
-            if (clk_rise)
-                saw_rise <= 1;
-            if (clk_fall)
-                saw_rise <= 0;  // reset after pulse complete
-        end
+        clk_inter_sync0 <= CLK_inter;
+        clk_inter_sync1 <= clk_inter_sync0;
     end
 
-    //-----------------------------------------
-    // State Transition Logic
-    //-----------------------------------------
+    wire clk_inter_rise =  clk_inter_sync0 & ~clk_inter_sync1;
+    wire clk_inter_fall = ~clk_inter_sync0 &  clk_inter_sync1;
+
+    // ----------------------------------------
+    // Next-state (combinational)
+    // ----------------------------------------
     always @(*) begin
+        next_state = current_state; // default to hold
         case (current_state)
             IDLE: begin
                 if (data_in == BEGIN_GUESSING)
                     next_state = WAIT_BEFORE_START;
-                else
+                else 
                     next_state = IDLE;
             end
+
             WAIT_BEFORE_START: begin
-                if (full_pulse)
+                if (clk_inter_fall) 
+                    next_state = SEND_START;
+                else
+                    next_state = WAIT_BEFORE_START;
+            end
+
+            SEND_START: begin
+                // hold START for one pulse then move to SEND_DATA
+                if (clk_inter_fall)
+                    next_state = SEND_DATA;
+                else
                     next_state = SEND_START;
             end
-            SEND_START: begin
-                if (full_pulse)
+
+            SEND_DATA: begin
+                if (clk_inter_fall)
+                    next_state = SEND_END;
+                else
                     next_state = SEND_DATA;
             end
-            SEND_DATA: begin
-                if (full_pulse)
+           
+            SEND_END: begin
+                if (clk_inter_fall)
+                    next_state = SHORT_DELAY;
+                else
                     next_state = SEND_END;
             end
-            SEND_END: begin
-                if (full_pulse)
+
+            SHORT_DELAY: begin
                     next_state = WAIT_REPLY;
             end
+
             WAIT_REPLY: begin
                 if (data_in == YES)
                     next_state = IDLE;
                 else if (data_in == NO)
                     next_state = WAIT_BEFORE_START;
+                else 
+                    next_state = WAIT_REPLY;
             end
-            default: begin
-                next_state = IDLE;
+
+            default: next_state = IDLE;
+        endcase
+    end
+
+    // -------------------------------------------------------------
+    // Output (Moore) logic for SEND states
+    // -------------------------------------------------------------
+    always @(*) begin
+        drive_en = 1'b0;
+        data_out = 8'h00;
+
+        case (current_state)
+            SEND_START: begin
+                drive_en = 1;
+                data_out = START_BYTE;
+            end
+            SEND_DATA: begin
+                drive_en = 1;
+                data_out = guess_byte;
+            end
+            SEND_END: begin
+                drive_en = 1;
+                data_out = END_BYTE;
             end
         endcase
     end
-    
 
-    //-----------------------------------------
-    // Output Logic
-    //-----------------------------------------
-    assign drive_en = (current_state == SEND_START || current_state == SEND_DATA || current_state == SEND_END);
-    assign data_out = (current_state == SEND_START) ? START_BYTE :
-                      (current_state == SEND_DATA) ? guess_byte :
-                      (current_state == SEND_END) ? END_BYTE : 8'bZZ; 
 
-    assign LED = guess_byte;
-
-    //-----------------------------------------
-    // State Register
-    //-----------------------------------------
+    // ----------------------------------------
+    // State register (synchronous)
+    // ----------------------------------------
     always @(posedge CLK_50) begin
-        if (SW[0]) begin
+        if (SW[0])
             current_state <= IDLE;
-        end
-        else begin
+        else
             current_state <= next_state;
-        end
     end
 
-    // Instantiate the cm_bus_if module
-    cm_bus_if cmb_0(.clk(CLK_inter), .rst(SW[0]), .data_out(data_out), .drive_en(drive_en), .data_in(data_in), .cm(CM));
+    // ----------------------------------------
+    // Instantiate bus interface
+    // ----------------------------------------
+    cm_bus_if cmb_0(
+        .data_out(data_out),
+        .drive_en(drive_en),
+        .data_in(data_in),
+        .cm(CM)
+    );
 
 endmodule
+

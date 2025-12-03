@@ -25,26 +25,35 @@ int main() {
     if (received_byte != START_BYTE) {
       continue;
     }
+    
+    haha_uart_print_str("Received start byte: ");
+    haha_uart_print_u8_hex(received_byte);
+    haha_uart_print_str("\r\n");
+
 
     uint8_t index = 0;
 
     while(1) {
       received_byte = haha_receive_from_fpga();
       if (received_byte == END_BYTE) {
+        haha_uart_print_str("Received end byte: ");
+        haha_uart_print_u8_hex(received_byte);
+        haha_uart_print_str("\r\n");
         break;
       }
 
       if (index < sizeof(receive_buffer)) {
         receive_buffer[index++] = received_byte;
       }
+      haha_uart_print_str("Received data\r\n");
     }
 
     haha_uart_print_str("Received guess: ");
-    for (uint8_t i = 0; i < index - 1; i++) {
+    for (uint8_t i = 0; i < index; i++) {
       haha_uart_print_u8_hex(receive_buffer[i]);
       haha_uart_print_str(" ");
     }
-    haha_uart_print_str("\r\n");
+    haha_uart_print_str("\r\n\n");
 
     uint8_t correct = 1;
     for (uint8_t i = 0; i < SECRET_CODE_LEN; i++) {
@@ -63,3 +72,6 @@ int main() {
     }
   }
 }
+
+
+//ERROR (EX0320) : Can not find GAO/GVIO specified net "out_reg[7]" in netlist "cm_bus_if"("/auto/fsi/zd227/timing_attacks/mcu_fpga/hw/gowin_proj/src/cm_bus_if.v.v":1)
