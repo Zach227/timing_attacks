@@ -20,3 +20,4 @@ thesis.pdf
 *.xml
 nomenclature.tex
 venv
+mcu_fpga/hw/gowin_proj/impl/*
