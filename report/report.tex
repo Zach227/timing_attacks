@@ -1,0 +1,78 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+
+\begin{document}
+
+\title{Conference Paper Title}
+
+% \author{\IEEEauthorblockN{Jacob Brown}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+% \IEEEauthorblockN{Zach Driskill}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+% \IEEEauthorblockN{Jeff Goeders}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% }
+
+\author{%
+    Zachary Driskill, Jacob Brown, and Jeffrey Goeders\\
+    Brigham Young University\\
+    450 Engineering Building\\
+    Provo, UT 84602 \\
+    \{zd227, jacobb00, jgoeders\}@byu.edu
+}
+
+\maketitle
+
+\begin{abstract}
+We did a timing attack.
+\end{abstract}
+
+\begin{IEEEkeywords}
+timing attack, FPGA
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+% brief intro to timing attacks
+Timing attacks are a type of side-channel attack.
+
+% our goal 
+To further learn about timing attacks, we implemented two simple attacks that exploit a non-constant compare function to extract a secret key.
+
+% our inspiration
+Our source of inspiration is Joe Grand, who demonstrated a simple timing attack \cite{video_key}. % Todo explain the timing attack he did
+
+\section{FPGA to MCU}
+
+\section{Human to FPGA}
+
+The purpose of the human-to-FPGA timing attack is to see if it's possible to carry out a toy timing attack using a human and FPGA. % this sentence is kinda dumb
+The non-constant compare function is implemented on an FPGA and we manually use an oscilloscope to measure time for each compare.
+
+\section{Conclusion}
+
+\section*{Acknowledgment}
+
+Dr. Goeders taught us everything we know about hardware security.
+
+\bibliographystyle{plain}
+\bibliography{references}{}
+
+\end{document}
