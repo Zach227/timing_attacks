@@ -27,27 +27,65 @@
                 <Signal>LED[1]</Signal>
                 <Signal>LED[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="current_state[3:0]">
-                <Signal>current_state[3]</Signal>
+            <Bus capture_enable="true" name="current_state[2:0]">
                 <Signal>current_state[2]</Signal>
                 <Signal>current_state[1]</Signal>
                 <Signal>current_state[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="next_state[3:0]">
-                <Signal>next_state[3]</Signal>
+            <Bus capture_enable="true" name="next_state[2:0]">
                 <Signal>next_state[2]</Signal>
                 <Signal>next_state[1]</Signal>
                 <Signal>next_state[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="data_out[7:0]">
-                <Signal>data_out[7]</Signal>
-                <Signal>data_out[6]</Signal>
-                <Signal>data_out[5]</Signal>
-                <Signal>data_out[4]</Signal>
-                <Signal>data_out[3]</Signal>
-                <Signal>data_out[2]</Signal>
-                <Signal>data_out[1]</Signal>
-                <Signal>data_out[0]</Signal>
+            <Bus capture_enable="true" name="guess_word[0][7:0]">
+                <Signal>guess_word[0][7]</Signal>
+                <Signal>guess_word[0][6]</Signal>
+                <Signal>guess_word[0][5]</Signal>
+                <Signal>guess_word[0][4]</Signal>
+                <Signal>guess_word[0][3]</Signal>
+                <Signal>guess_word[0][2]</Signal>
+                <Signal>guess_word[0][1]</Signal>
+                <Signal>guess_word[0][0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="guess_word[1][7:0]">
+                <Signal>guess_word[1][7]</Signal>
+                <Signal>guess_word[1][6]</Signal>
+                <Signal>guess_word[1][5]</Signal>
+                <Signal>guess_word[1][4]</Signal>
+                <Signal>guess_word[1][3]</Signal>
+                <Signal>guess_word[1][2]</Signal>
+                <Signal>guess_word[1][1]</Signal>
+                <Signal>guess_word[1][0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="guess_word[2][7:0]">
+                <Signal>guess_word[2][7]</Signal>
+                <Signal>guess_word[2][6]</Signal>
+                <Signal>guess_word[2][5]</Signal>
+                <Signal>guess_word[2][4]</Signal>
+                <Signal>guess_word[2][3]</Signal>
+                <Signal>guess_word[2][2]</Signal>
+                <Signal>guess_word[2][1]</Signal>
+                <Signal>guess_word[2][0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="guess_word[3][7:0]">
+                <Signal>guess_word[3][7]</Signal>
+                <Signal>guess_word[3][6]</Signal>
+                <Signal>guess_word[3][5]</Signal>
+                <Signal>guess_word[3][4]</Signal>
+                <Signal>guess_word[3][3]</Signal>
+                <Signal>guess_word[3][2]</Signal>
+                <Signal>guess_word[3][1]</Signal>
+                <Signal>guess_word[3][0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="data_from_mcu[7:0]">
+                <Signal>data_from_mcu[7]</Signal>
+                <Signal>data_from_mcu[6]</Signal>
+                <Signal>data_from_mcu[5]</Signal>
+                <Signal>data_from_mcu[4]</Signal>
+                <Signal>data_from_mcu[3]</Signal>
+                <Signal>data_from_mcu[2]</Signal>
+                <Signal>data_from_mcu[1]</Signal>
+                <Signal>data_from_mcu[0]</Signal>
             </Bus>
             <Bus capture_enable="true" name="guess_byte[7:0]">
                 <Signal>guess_byte[7]</Signal>
@@ -59,53 +97,99 @@
                 <Signal>guess_byte[1]</Signal>
                 <Signal>guess_byte[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="data_in[7:0]">
-                <Signal>data_in[7]</Signal>
-                <Signal>data_in[6]</Signal>
-                <Signal>data_in[5]</Signal>
-                <Signal>data_in[4]</Signal>
-                <Signal>data_in[3]</Signal>
-                <Signal>data_in[2]</Signal>
-                <Signal>data_in[1]</Signal>
-                <Signal>data_in[0]</Signal>
+            <Bus capture_enable="true" name="byte_counter[1:0]">
+                <Signal>byte_counter[1]</Signal>
+                <Signal>byte_counter[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="cmb_0/data_out[7:0]">
-                <Signal>cmb_0/data_out[7]</Signal>
-                <Signal>cmb_0/data_out[6]</Signal>
-                <Signal>cmb_0/data_out[5]</Signal>
-                <Signal>cmb_0/data_out[4]</Signal>
-                <Signal>cmb_0/data_out[3]</Signal>
-                <Signal>cmb_0/data_out[2]</Signal>
-                <Signal>cmb_0/data_out[1]</Signal>
-                <Signal>cmb_0/data_out[0]</Signal>
+            <Bus capture_enable="true" name="delay_counter[31:0]">
+                <Signal>delay_counter[31]</Signal>
+                <Signal>delay_counter[30]</Signal>
+                <Signal>delay_counter[29]</Signal>
+                <Signal>delay_counter[28]</Signal>
+                <Signal>delay_counter[27]</Signal>
+                <Signal>delay_counter[26]</Signal>
+                <Signal>delay_counter[25]</Signal>
+                <Signal>delay_counter[24]</Signal>
+                <Signal>delay_counter[23]</Signal>
+                <Signal>delay_counter[22]</Signal>
+                <Signal>delay_counter[21]</Signal>
+                <Signal>delay_counter[20]</Signal>
+                <Signal>delay_counter[19]</Signal>
+                <Signal>delay_counter[18]</Signal>
+                <Signal>delay_counter[17]</Signal>
+                <Signal>delay_counter[16]</Signal>
+                <Signal>delay_counter[15]</Signal>
+                <Signal>delay_counter[14]</Signal>
+                <Signal>delay_counter[13]</Signal>
+                <Signal>delay_counter[12]</Signal>
+                <Signal>delay_counter[11]</Signal>
+                <Signal>delay_counter[10]</Signal>
+                <Signal>delay_counter[9]</Signal>
+                <Signal>delay_counter[8]</Signal>
+                <Signal>delay_counter[7]</Signal>
+                <Signal>delay_counter[6]</Signal>
+                <Signal>delay_counter[5]</Signal>
+                <Signal>delay_counter[4]</Signal>
+                <Signal>delay_counter[3]</Signal>
+                <Signal>delay_counter[2]</Signal>
+                <Signal>delay_counter[1]</Signal>
+                <Signal>delay_counter[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="cmb_0/data_in[7:0]">
-                <Signal>cmb_0/data_in[7]</Signal>
-                <Signal>cmb_0/data_in[6]</Signal>
-                <Signal>cmb_0/data_in[5]</Signal>
-                <Signal>cmb_0/data_in[4]</Signal>
-                <Signal>cmb_0/data_in[3]</Signal>
-                <Signal>cmb_0/data_in[2]</Signal>
-                <Signal>cmb_0/data_in[1]</Signal>
-                <Signal>cmb_0/data_in[0]</Signal>
+            <Bus capture_enable="true" name="max_delay[31:0]">
+                <Signal>max_delay[31]</Signal>
+                <Signal>max_delay[30]</Signal>
+                <Signal>max_delay[29]</Signal>
+                <Signal>max_delay[28]</Signal>
+                <Signal>max_delay[27]</Signal>
+                <Signal>max_delay[26]</Signal>
+                <Signal>max_delay[25]</Signal>
+                <Signal>max_delay[24]</Signal>
+                <Signal>max_delay[23]</Signal>
+                <Signal>max_delay[22]</Signal>
+                <Signal>max_delay[21]</Signal>
+                <Signal>max_delay[20]</Signal>
+                <Signal>max_delay[19]</Signal>
+                <Signal>max_delay[18]</Signal>
+                <Signal>max_delay[17]</Signal>
+                <Signal>max_delay[16]</Signal>
+                <Signal>max_delay[15]</Signal>
+                <Signal>max_delay[14]</Signal>
+                <Signal>max_delay[13]</Signal>
+                <Signal>max_delay[12]</Signal>
+                <Signal>max_delay[11]</Signal>
+                <Signal>max_delay[10]</Signal>
+                <Signal>max_delay[9]</Signal>
+                <Signal>max_delay[8]</Signal>
+                <Signal>max_delay[7]</Signal>
+                <Signal>max_delay[6]</Signal>
+                <Signal>max_delay[5]</Signal>
+                <Signal>max_delay[4]</Signal>
+                <Signal>max_delay[3]</Signal>
+                <Signal>max_delay[2]</Signal>
+                <Signal>max_delay[1]</Signal>
+                <Signal>max_delay[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="cmb_0/cm[7:0]">
-                <Signal>cmb_0/cm[7]</Signal>
-                <Signal>cmb_0/cm[6]</Signal>
-                <Signal>cmb_0/cm[5]</Signal>
-                <Signal>cmb_0/cm[4]</Signal>
-                <Signal>cmb_0/cm[3]</Signal>
-                <Signal>cmb_0/cm[2]</Signal>
-                <Signal>cmb_0/cm[1]</Signal>
-                <Signal>cmb_0/cm[0]</Signal>
+            <Bus capture_enable="true" name="max_byte[7:0]">
+                <Signal>max_byte[7]</Signal>
+                <Signal>max_byte[6]</Signal>
+                <Signal>max_byte[5]</Signal>
+                <Signal>max_byte[4]</Signal>
+                <Signal>max_byte[3]</Signal>
+                <Signal>max_byte[2]</Signal>
+                <Signal>max_byte[1]</Signal>
+                <Signal>max_byte[0]</Signal>
             </Bus>
-            <Signal capture_enable="true">CLK_50</Signal>
             <Signal capture_enable="true">CLK_inter</Signal>
-            <Signal capture_enable="true">drive_en</Signal>
-            <Signal capture_enable="true">cmb_0/drive_en</Signal>
-            <Signal capture_enable="true">clk_inter_rise</Signal>
-            <Signal capture_enable="true">clk_inter_fall</Signal>
+            <Signal capture_enable="true">waiting_for_reply</Signal>
+            <Signal capture_enable="true">begin_transaction</Signal>
+            <Signal capture_enable="true">inc_guess_byte</Signal>
+            <Signal capture_enable="true">inc_guess_byte_reg</Signal>
+            <Signal capture_enable="true">reset_guess_byte</Signal>
+            <Signal capture_enable="true">inc_byte_counter</Signal>
+            <Signal capture_enable="true">reset_delay_counter</Signal>
+            <Signal capture_enable="true">inc_delay_counter</Signal>
+            <Signal capture_enable="true">store_byte</Signal>
         </SignalList>
     </AoCore_Lite>
-    <GAO_ID>0111010100110110</GAO_ID>
+    <GAO_ID>1011001010101110</GAO_ID>
 </GAO_CONFIG>
