@@ -6,6 +6,8 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{minted}
+\usepackage{booktabs}
 
 \begin{document}
 
@@ -31,11 +33,11 @@
 % }
 
 \author{%
-    Zachary Driskill, Jacob Brown, and Jeffrey Goeders\\
+    Zachary Driskill and Jacob Brown\\
     Brigham Young University\\
     450 Engineering Building\\
     Provo, UT 84602 \\
-    \{zd227, jacobb00, jgoeders\}@byu.edu
+    \{zd227, jacobb00\}@byu.edu
 }
 
 \maketitle
@@ -53,26 +55,87 @@ timing attack, FPGA
 % brief intro to timing attacks
 Timing attacks are a type of side-channel attack.
 
-% our goal 
-To further learn about timing attacks, we implemented two simple attacks that exploit a non-constant compare function to extract a secret key.
+To further learn about timing attacks, explored a timing attack that exploit a non-constant compare function to extract a secret key.
+Our source of inspiration is Joe Grand, who demonstrated this simple timing attack using a microcontroller, four buttons, and an oscilloscope \cite{video_key}.
+The non-constant compare function is simply a compare function that exits as soon as a mismatch occurs (see the code snippet below).
 
-% our inspiration
-Our source of inspiration is Joe Grand, who demonstrated a simple timing attack \cite{video_key}. % Todo explain the timing attack he did
+\begin{minted}{python}
+def non_constant_compare(guess):
+    for x, y in zip(key, guess):
+        if x != y:
+            return False
+    return True
+\end{minted}
+
+By measuring how long the compare function takes to execute, one can estimate how much of the input matched.
+For example, say we are guessing a 4 character string.
+We guess 26 strings, each simply a single letter repeated four times ("aaaa", "bbbb", "cccc" ... "zzzz"), and measure the execution time of the compare function.
+The guessed string with the lowest compare time has the correct first digit.
+This process is repeated for the other three digits, making sure to put the discovered digits in front of the guessed digits.
+
+We implement two simple timing attacks on the HaHav3 board that exploit a non-constant compare function:
+
+\begin{enumerate}
+    \item \textbf{MCU to FPGA} - the MCU is the victim and the FPGA is the attacker. The FPGA counts cycles to measure compare time.
+    \item \textbf{Human to FPGA} - the FPGA is the victim and a human is the attacker. The human uses an oscilloscope to measure compare time. 
+\end{enumerate}
+
+% Both implementations involve guessing a secret key, measuring comparison time, and 
 
 \section{FPGA to MCU}
 
+TODO
+
 \section{Human to FPGA}
 
-The purpose of the human-to-FPGA timing attack is to see if it's possible to carry out a toy timing attack using a human and FPGA. % this sentence is kinda dumb
-The non-constant compare function is implemented on an FPGA and we manually use an oscilloscope to measure time for each compare.
+% The purpose of the human-to-FPGA timing attack is to see if demonstrate a toy timing attack between a human and FPGA. % this sentence is kind of dumb
+For the human to FPGA timing attack, the non-constant compare function is implemented on the FPGA present on the HaHav3 board and a human carries out the attack. 
+The FPGA contains a secret key that it compares to the input guess.
+A human uses the three buttons on the HaHav3 board to input a four pin guess and uses an oscilloscope to measure the time between the last button press and the compare function result.
+It is important to note that the FPGA waits until all four input values are received before beginning the compare function, so the final button press can act as a time reference for the start of the comparison function.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=4in]{figures/digit_0_ecen522r.pdf}
+    \caption{Oscilloscope waveform capture showing when the final button was pressed for each sequence and when the comparison finished. The 'compare finished' point is centered at 0.}
+    \label{fig:digit0}
+\end{figure}
+
+\begin{table}[h!]
+    \centering
+    \caption{Input values and comparison delays for each tested digit.}
+    \label{tab:digit_delays}
+    \begin{tabular}{c c c}
+        \toprule
+        \textbf{Digit} & \textbf{Input Value} & \textbf{Delay (ns)} \\
+        \midrule
+        0 & 0000 & 109 \\
+          & 1111 & 128 \\
+          & 2222 & 104 \\
+        \midrule
+        1 & 1000 & 160 \\
+          & 1111 & 131 \\
+          & 1222 & 127 \\
+        \midrule
+        2 & 1000 & 153 \\
+          & 1011 & 153 \\
+          & 1022 & 173 \\
+        \midrule
+        3 & 1020 & 165 \\
+          & 1021 & 174 \\
+          & 1022 & 172 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{Conclusion}
 
 \section*{Acknowledgment}
 
-Dr. Goeders taught us everything we know about hardware security.
+Dr. Goeders taught us everything we know about hardware security. Joe Grand gave us the idea for the simple timing attack.
 
 \bibliographystyle{plain}
 \bibliography{references}{}
 
 \end{document}
+
