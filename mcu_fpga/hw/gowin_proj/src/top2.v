@@ -50,7 +50,7 @@ module top(
             guess_byte <= START_GUESS_RANGE; // start at 0x05 per your design
         end else begin
             // increment only when we are in WAIT_REPLY and MCU replied NO
-            if (current_state == WAIT_REPLY && data_in == NO) begin
+            if (current_state == SHORT_DELAY) begin
                 if (guess_byte == 8'hFF)
                     guess_byte <= START_GUESS_RANGE;
                 else
@@ -74,13 +74,24 @@ module top(
     wire clk_inter_fall = ~clk_inter_sync0 &  clk_inter_sync1;
 
     // ----------------------------------------
+    // Sychronizer for data in 
+    // ----------------------------------------
+    reg [7:0] data_in_sync0, data_in_sync1;
+
+    always @(posedge CLK_50) begin
+        data_in_sync0 <= data_in;        // raw bus sampled
+        data_in_sync1 <= data_in_sync0; // stable copy for FSM
+    end
+
+
+    // ----------------------------------------
     // Next-state (combinational)
     // ----------------------------------------
     always @(*) begin
         next_state = current_state; // default to hold
         case (current_state)
             IDLE: begin
-                if (data_in == BEGIN_GUESSING)
+                if (data_in_sync0 == BEGIN_GUESSING)
                     next_state = WAIT_BEFORE_START;
                 else 
                     next_state = IDLE;
@@ -120,9 +131,9 @@ module top(
             end
 
             WAIT_REPLY: begin
-                if (data_in == YES)
+                if (data_in_sync1 == YES)
                     next_state = IDLE;
-                else if (data_in == NO)
+                else if (data_in_sync1 == NO)
                     next_state = WAIT_BEFORE_START;
                 else 
                     next_state = WAIT_REPLY;

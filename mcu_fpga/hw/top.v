@@ -131,9 +131,9 @@ module top(
             end
 
             WAIT_REPLY: begin
-                if (data_in_sync0 == YES)
+                if (data_in_sync1 == YES)
                     next_state = IDLE;
-                else if (data_in_sync0 == NO)
+                else if (data_in_sync1 == NO)
                     next_state = WAIT_BEFORE_START;
                 else 
                     next_state = WAIT_REPLY;

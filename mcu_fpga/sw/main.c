@@ -8,7 +8,7 @@
 
 
 #define SECRET_CODE_LEN 1
-const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {0x7A};
+const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {0x5A};
 
 
 int main() {

@@ -16,7 +16,8 @@
 #define HAHA_CM_PORT PORTA
 #define HAHA_CLK_INTER_PORT PORTC
 #define HAHA_CLK_INTER_PIN PIN0_bm
-#define HAHA_CLK_INTER_DELAY 2
+#define HAHA_CLK_INTER_DELAY 1
+#define HAHA_CLK_INER_DELAY_US 100
 
 /* Function Prototypes */
 
