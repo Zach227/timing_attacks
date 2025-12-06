@@ -6,9 +6,10 @@
 #define NO 0x04
 #define END_BYTE 0x05
 
-
 #define SECRET_CODE_LEN 2
-const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {0x89, 0xB2};
+const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {0xFF, 0xFF};
+
+#define DEBUG_MODE 0
 
 
 int main() {
@@ -26,34 +27,41 @@ int main() {
       continue;
     }
     
-    haha_uart_print_str("Received start byte: ");
-    haha_uart_print_u8_hex(received_byte);
-    haha_uart_print_str("\r\n");
-
+    if (DEBUG_MODE) {
+      haha_uart_print_str("Received start byte: ");
+      haha_uart_print_u8_hex(received_byte);
+      haha_uart_print_str("\r\n");
+    }
 
     uint8_t index = 0;
 
     while(1) {
       received_byte = haha_receive_from_fpga();
       if (received_byte == END_BYTE) {
-        haha_uart_print_str("Received end byte: ");
-        haha_uart_print_u8_hex(received_byte);
-        haha_uart_print_str("\r\n");
+        if (DEBUG_MODE) {
+          haha_uart_print_str("Received end byte: ");
+          haha_uart_print_u8_hex(received_byte);
+          haha_uart_print_str("\r\n");
+        }
         break;
       }
 
       if (index < sizeof(receive_buffer)) {
         receive_buffer[index++] = received_byte;
       }
-      haha_uart_print_str("Received data\r\n");
+      if (DEBUG_MODE) {
+        haha_uart_print_str("Received data\r\n");
+      }
     }
 
-    haha_uart_print_str("Received guess: ");
-    for (uint8_t i = 0; i < index; i++) {
-      haha_uart_print_u8_hex(receive_buffer[i]);
-      haha_uart_print_str(" ");
+    if (DEBUG_MODE) {
+      haha_uart_print_str("Received guess: ");
+      for (uint8_t i = 0; i < index; i++) {
+        haha_uart_print_u8_hex(receive_buffer[i]);
+        haha_uart_print_str(" ");
+      }
+      haha_uart_print_str("\r\n\n");
     }
-    haha_uart_print_str("\r\n\n");
 
     uint8_t correct = 1;
     for (uint8_t i = 0; i < SECRET_CODE_LEN; i++) {
@@ -65,8 +73,16 @@ int main() {
     }
 
     if (correct) {
-      haha_uart_print_str("Correct guess!\r\n");
       haha_send_to_fpga(YES);
+      haha_uart_print_str("Correct guess!\r\n");
+      haha_uart_print_str("Secret Code was:");
+      
+      for (uint8_t i = 0; i < index; i++) {
+        haha_uart_print_u8_hex(receive_buffer[i]);
+        haha_uart_print_str(" ");
+      }
+
+      haha_uart_print_str("\r\n");
     }
     else {
       haha_send_to_fpga(NO);
