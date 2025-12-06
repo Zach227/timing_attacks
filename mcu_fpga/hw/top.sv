@@ -87,7 +87,7 @@ module top (
     end
 
     // Delay Counter
-    logic [31:0] delay_counter;
+    logic [23:0] delay_counter;
     logic reset_delay_counter;
     logic inc_delay_counter;
 
@@ -103,7 +103,7 @@ module top (
     end
 
     // Memory to store delays
-    logic [31:0] delay_memory [0:255];
+    logic [23:0] delay_memory [0:255];
     logic store_byte;
 
     always_ff @(posedge CLK_50) begin
