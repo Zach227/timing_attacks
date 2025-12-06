@@ -11,7 +11,7 @@
 
 \begin{document}
 
-\title{Conference Paper Title}
+\title{Timing Attacks}
 
 % \author{\IEEEauthorblockN{Jacob Brown}
 % \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
@@ -47,13 +47,14 @@ We did a timing attack.
 \end{abstract}
 
 \begin{IEEEkeywords}
-timing attack, FPGA
+timing attack, FPGA, constant-time
 \end{IEEEkeywords}
 
 \section{Introduction}
 
 % brief intro to timing attacks
 Timing attacks are a type of side-channel attack.
+TODO more intro.
 
 To further learn about timing attacks, explored a timing attack that exploit a non-constant compare function to extract a secret key.
 Our source of inspiration is Joe Grand, who demonstrated this simple timing attack using a microcontroller, four buttons, and an oscilloscope \cite{video_key}.
@@ -90,16 +91,26 @@ TODO
 
 % The purpose of the human-to-FPGA timing attack is to see if demonstrate a toy timing attack between a human and FPGA. % this sentence is kind of dumb
 For the human to FPGA timing attack, the non-constant compare function is implemented on the FPGA present on the HaHav3 board and a human carries out the attack. 
-The FPGA contains a secret key that it compares to the input guess.
+The FPGA compares an input guess to a secret key and indicates whether it is success or fail.
 A human uses the three buttons on the HaHav3 board to input a four pin guess and uses an oscilloscope to measure the time between the last button press and the compare function result.
 It is important to note that the FPGA waits until all four input values are received before beginning the compare function, so the final button press can act as a time reference for the start of the comparison function.
 
+An oscilloscope waveform capturing the first step of the attack is shown in Figure \ref{fig:digit0}.
+The green waveform is for the buttons (an OR between the three buttons) and the yellow waveform is for the compare complete signal (an OR between the success and fail signals).
+% time at the final button press and the compare finish
+The three input guesses were 0000, 1111, and 2222 and the waveforms overlaid on each other in the figure.
+Looking at the delay from button press to compare finish, the delay is longest when 1 was the first digit, indicating that 1 is the correct value of the first digit.
+
 \begin{figure}
     \centering
-    \includegraphics[height=4in]{figures/digit_0_ecen522r.pdf}
-    \caption{Oscilloscope waveform capture showing when the final button was pressed for each sequence and when the comparison finished. The 'compare finished' point is centered at 0.}
+    \includegraphics[height=2.5in]{figures/digit_0_ecen522r.pdf}
+    \caption{Oscilloscope waveform capture showing when the final button was pressed for each input sequence and when the comparison finished. The 'compare finished' point is centered at 0.}
     \label{fig:digit0}
 \end{figure}
+
+The input guesses and compare delays for all steps in the attack are shown in Table \ref{tab:digit_delays}. 
+The fourth digit is not susceptible to the time attack because, whether correct or incorrect, the compare function runs the full compare, so while the first three digits are discovered my measuring time, the fourth digit requires brute force.
+% The correct code is 1021.
 
 \begin{table}[h!]
     \centering
@@ -129,6 +140,10 @@ It is important to note that the FPGA waits until all four input values are rece
 \end{table}
 
 \section{Conclusion}
+
+These simple timing attack implementations highlight the importance of constant time functions.
+In the real world, a non-constant implementation of encryption algorithms or security functions are at risk of timing attacks and pose a real threat to security.
+While making our four digit compare functions constant-time would be simple, making more complex algorithms constant-time requires careful thought and methodical techniques like bit-slicing. % TODO citation?
 
 \section*{Acknowledgment}
 
