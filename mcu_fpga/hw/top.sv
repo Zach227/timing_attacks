@@ -21,7 +21,7 @@ module top (
         IDLE,
         SEND_GUESS,
         COUNT_DELAY,
-        STORE_DELAY,
+        COMPARTE_DELAY,
         SET_CORRECT_GUESS,
         RESET_FOR_NEXT_BYTE
     } state_t;
@@ -102,52 +102,39 @@ module top (
         end
     end
 
-    // Memory to store delays
-    logic [23:0] delay_memory [0:255];
-    logic store_byte;
+    // Delay comparison
+    logic [23:0] max_delay;
+    logic [7:0] max_byte_guess;
+    logic compare_delay;
 
     always_ff @(posedge CLK_50) begin
-        if (store_byte) begin
-            delay_memory[guess_byte] <= delay_counter;
+        if (compare_delay) begin
+            if (delay_counter > max_delay) begin
+                max_delay <= delay_counter;
+                max_byte_guess <= guess_byte;
+            end
         end
     end
 
-    // Correct Bytes memory
+    // Correct code bytes
     logic [7:0] correct_bytes [CODE_LEN-1:0];
+    logic set_correct;
 
-    always_comb begin
-        // Default guess_word copies correct_bytes
-        for (int i = 0; i < CODE_LEN; i++)
-            guess_word[i] = correct_bytes[i];
-
-        // Replace current byte with guess_byte
-        guess_word[byte_counter] = guess_byte;
+    // Set correct bytes
+    always_ff @(posedge CLK_50) begin
+        if (set_correct) begin
+            correct_bytes[byte_counter] <= max_byte_guess;
+        end
     end
 
-    // Process to search for the byte that had the longest delay time
-    always_ff @(posedge CLK_50) begin
-        if (SW[0]) begin
-            for (int i = 0; i < CODE_LEN; i++) begin
-                correct_bytes[i] <= 8'h00;
-            end
-        end
-        else begin
-            if (current_state == SET_CORRECT_GUESS) begin
-                // find max
-                integer i;
-                logic [31:0] max_delay;
-                logic [7:0]  max_byte;
-                max_delay = 32'd0;
-                max_byte  = 8'd0;
-                for (i = 0; i < 256; i = i + 1) begin
-                    if (delay_memory[i] > max_delay) begin
-                        max_delay = delay_memory[i];
-                        max_byte  = i[7:0];
-                    end
-                end
-                correct_bytes[byte_counter] <= max_byte;
-            end
-        end
+    // Set guess_word
+    logic [BYTE_COUNT_WIDTH-1:0] i;
+    always_comb begin
+        for (i = 0; i < CODE_LEN; i++)
+            if (i == byte_counter)
+                guess_word[i] = guess_byte;
+            else
+                guess_word[i] = correct_bytes[i];
     end
 
     // State Machine transition logic and outputs
@@ -156,7 +143,7 @@ module top (
         begin_transaction = 1'b0;
         reset_delay_counter = 1'b0;
         inc_delay_counter = 1'b0;
-        store_byte = 1'b0;
+        compare_delay = 1'b0;
         inc_guess_byte      = 1'b0;
         reset_guess_byte    = 1'b0;
         inc_byte_counter    = 1'b0;
@@ -187,12 +174,12 @@ module top (
 
                 // transition logic
                 if (!waiting_for_reply)
-                    next_state = STORE_DELAY;
+                    next_state = COMPARTE_DELAY;
             end
 
-            STORE_DELAY: begin
+            COMPARTE_DELAY: begin
                 // outputs
-                store_byte = 1'b1;
+                compare_delay = 1'b1;
 
                 // transition logic
                 if (guess_byte == 8'hFF) begin
