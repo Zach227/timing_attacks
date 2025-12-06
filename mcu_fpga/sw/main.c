@@ -7,8 +7,8 @@
 #define END_BYTE 0x05
 
 
-#define SECRET_CODE_LEN 1
-const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {0x5A};
+#define SECRET_CODE_LEN 2
+const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {0x89, 0xB2};
 
 
 int main() {
@@ -61,6 +61,7 @@ int main() {
         correct = 0;
         break;
       }
+    _delay_ms(1);
     }
 
     if (correct) {

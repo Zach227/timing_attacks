@@ -37,16 +37,6 @@
                 <Signal>next_state[1]</Signal>
                 <Signal>next_state[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="guess_word[0][7:0]">
-                <Signal>guess_word[0][7]</Signal>
-                <Signal>guess_word[0][6]</Signal>
-                <Signal>guess_word[0][5]</Signal>
-                <Signal>guess_word[0][4]</Signal>
-                <Signal>guess_word[0][3]</Signal>
-                <Signal>guess_word[0][2]</Signal>
-                <Signal>guess_word[0][1]</Signal>
-                <Signal>guess_word[0][0]</Signal>
-            </Bus>
             <Bus capture_enable="true" name="guess_word[1][7:0]">
                 <Signal>guess_word[1][7]</Signal>
                 <Signal>guess_word[1][6]</Signal>
@@ -57,25 +47,15 @@
                 <Signal>guess_word[1][1]</Signal>
                 <Signal>guess_word[1][0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="guess_word[2][7:0]">
-                <Signal>guess_word[2][7]</Signal>
-                <Signal>guess_word[2][6]</Signal>
-                <Signal>guess_word[2][5]</Signal>
-                <Signal>guess_word[2][4]</Signal>
-                <Signal>guess_word[2][3]</Signal>
-                <Signal>guess_word[2][2]</Signal>
-                <Signal>guess_word[2][1]</Signal>
-                <Signal>guess_word[2][0]</Signal>
-            </Bus>
-            <Bus capture_enable="true" name="guess_word[3][7:0]">
-                <Signal>guess_word[3][7]</Signal>
-                <Signal>guess_word[3][6]</Signal>
-                <Signal>guess_word[3][5]</Signal>
-                <Signal>guess_word[3][4]</Signal>
-                <Signal>guess_word[3][3]</Signal>
-                <Signal>guess_word[3][2]</Signal>
-                <Signal>guess_word[3][1]</Signal>
-                <Signal>guess_word[3][0]</Signal>
+            <Bus capture_enable="true" name="guess_word[0][7:0]">
+                <Signal>guess_word[0][7]</Signal>
+                <Signal>guess_word[0][6]</Signal>
+                <Signal>guess_word[0][5]</Signal>
+                <Signal>guess_word[0][4]</Signal>
+                <Signal>guess_word[0][3]</Signal>
+                <Signal>guess_word[0][2]</Signal>
+                <Signal>guess_word[0][1]</Signal>
+                <Signal>guess_word[0][0]</Signal>
             </Bus>
             <Bus capture_enable="true" name="data_from_mcu[7:0]">
                 <Signal>data_from_mcu[7]</Signal>
@@ -97,19 +77,10 @@
                 <Signal>guess_byte[1]</Signal>
                 <Signal>guess_byte[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="byte_counter[1:0]">
-                <Signal>byte_counter[1]</Signal>
+            <Bus capture_enable="true" name="byte_counter[0:0]">
                 <Signal>byte_counter[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="delay_counter[31:0]">
-                <Signal>delay_counter[31]</Signal>
-                <Signal>delay_counter[30]</Signal>
-                <Signal>delay_counter[29]</Signal>
-                <Signal>delay_counter[28]</Signal>
-                <Signal>delay_counter[27]</Signal>
-                <Signal>delay_counter[26]</Signal>
-                <Signal>delay_counter[25]</Signal>
-                <Signal>delay_counter[24]</Signal>
+            <Bus capture_enable="true" name="delay_counter[23:0]">
                 <Signal>delay_counter[23]</Signal>
                 <Signal>delay_counter[22]</Signal>
                 <Signal>delay_counter[21]</Signal>
@@ -135,15 +106,7 @@
                 <Signal>delay_counter[1]</Signal>
                 <Signal>delay_counter[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="max_delay[31:0]">
-                <Signal>max_delay[31]</Signal>
-                <Signal>max_delay[30]</Signal>
-                <Signal>max_delay[29]</Signal>
-                <Signal>max_delay[28]</Signal>
-                <Signal>max_delay[27]</Signal>
-                <Signal>max_delay[26]</Signal>
-                <Signal>max_delay[25]</Signal>
-                <Signal>max_delay[24]</Signal>
+            <Bus capture_enable="true" name="max_delay[23:0]">
                 <Signal>max_delay[23]</Signal>
                 <Signal>max_delay[22]</Signal>
                 <Signal>max_delay[21]</Signal>
@@ -169,15 +132,15 @@
                 <Signal>max_delay[1]</Signal>
                 <Signal>max_delay[0]</Signal>
             </Bus>
-            <Bus capture_enable="true" name="max_byte[7:0]">
-                <Signal>max_byte[7]</Signal>
-                <Signal>max_byte[6]</Signal>
-                <Signal>max_byte[5]</Signal>
-                <Signal>max_byte[4]</Signal>
-                <Signal>max_byte[3]</Signal>
-                <Signal>max_byte[2]</Signal>
-                <Signal>max_byte[1]</Signal>
-                <Signal>max_byte[0]</Signal>
+            <Bus capture_enable="true" name="max_byte_guess[7:0]">
+                <Signal>max_byte_guess[7]</Signal>
+                <Signal>max_byte_guess[6]</Signal>
+                <Signal>max_byte_guess[5]</Signal>
+                <Signal>max_byte_guess[4]</Signal>
+                <Signal>max_byte_guess[3]</Signal>
+                <Signal>max_byte_guess[2]</Signal>
+                <Signal>max_byte_guess[1]</Signal>
+                <Signal>max_byte_guess[0]</Signal>
             </Bus>
             <Signal capture_enable="true">CLK_inter</Signal>
             <Signal capture_enable="true">waiting_for_reply</Signal>
@@ -188,8 +151,10 @@
             <Signal capture_enable="true">inc_byte_counter</Signal>
             <Signal capture_enable="true">reset_delay_counter</Signal>
             <Signal capture_enable="true">inc_delay_counter</Signal>
-            <Signal capture_enable="true">store_byte</Signal>
+            <Signal capture_enable="true">compare_delay</Signal>
+            <Signal capture_enable="true">reset_max</Signal>
+            <Signal capture_enable="true">set_correct</Signal>
         </SignalList>
     </AoCore_Lite>
-    <GAO_ID>1011001010101110</GAO_ID>
+    <GAO_ID>1110011100010101</GAO_ID>
 </GAO_CONFIG>

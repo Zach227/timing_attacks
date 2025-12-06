@@ -1,15 +1,16 @@
 
 module send_guess #(
-    parameter int CODE_LEN = 4
+    parameter int CODE_LEN = 2
 ) (
     input  wire logic CLK_50,
     input  wire logic CLK_inter,   // MCU-driven interconnect clock
     input  wire logic [0:0]  SW,          // active-high reset
     inout  logic [7:0]  CM,          // bidirectional bus
-    input  logic [7:0] guess [0:CODE_LEN-1],
+    input  logic [7:0] guess [CODE_LEN-1:0],
     input  logic begin_transaction,
     output logic waiting_for_reply,
-    output logic [7:0] data_from_mcu
+    output logic [7:0] data_from_mcu,
+    output logic correct_flag
 );
 
     // Protocol bytes
@@ -21,14 +22,15 @@ module send_guess #(
     localparam [7:0] START_GUESS_RANGE  = 8'h06;
 
     // FSM states
-    typedef enum logic [2:0] {
+    typedef enum logic [3:0] {
         IDLE,
         WAIT_BEFORE_START,
         SEND_START,
         SEND_DATA,
         SEND_END,
         SHORT_DELAY,
-        WAIT_REPLY
+        WAIT_REPLY,
+        CORRECT
     } state_t;
 
     state_t current_state, next_state;
@@ -117,8 +119,16 @@ module send_guess #(
             end
 
             WAIT_REPLY: begin
-                if (data_in_sync1 == YES || data_in_sync1 == NO)
+                if (data_in_sync1 == YES) begin
+                    next_state = CORRECT;
+                end
+                else if (data_in_sync1 == NO) begin
                     next_state = IDLE;
+                end
+            end
+
+            CORRECT: begin
+                next_state = CORRECT;
             end
 
             default: next_state = IDLE;
@@ -130,6 +140,7 @@ module send_guess #(
         drive_en = 1'b0;
         data_out = 8'h00;
         waiting_for_reply = 1'b0;
+        correct_flag = 1'b0;
 
         case (current_state)
             SEND_START: begin
@@ -146,6 +157,9 @@ module send_guess #(
             end
             WAIT_REPLY: begin
                 waiting_for_reply = 1'b1;
+            end
+            CORRECT: begin
+                correct_flag = 1'b1;
             end
         endcase
     end
