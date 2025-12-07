@@ -6,8 +6,8 @@
 #define NO 0x04
 #define END_BYTE 0x05
 
-#define SECRET_CODE_LEN 2
-const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {0xFF, 0xFF};
+#define SECRET_CODE_LEN 16
+const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {0x2A, 0x98, 0xF3, 0x66, 0x2A, 0x87, 0x11, 0xCA, 0x14, 0x33, 0xE6, 0x6D, 0x0F, 0x67, 0x27, 0x55};
 
 #define DEBUG_MODE 0
 
@@ -69,7 +69,7 @@ int main() {
         correct = 0;
         break;
       }
-    _delay_ms(1);
+    _delay_us(5);
     }
 
     if (correct) {

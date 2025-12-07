@@ -4,7 +4,7 @@ module send_guess #(
 ) (
     input  wire logic CLK_50,
     input  wire logic CLK_inter,   // MCU-driven interconnect clock
-    input  wire logic [0:0]  SW,          // active-high reset
+    input  wire logic [9:0]  SW,          // active-high reset
     inout  logic [7:0]  CM,          // bidirectional bus
     input  logic [7:0] guess [CODE_LEN-1:0],
     input  logic begin_transaction,
@@ -69,7 +69,7 @@ module send_guess #(
     localparam int BYTE_COUNT_WIDTH = (CODE_LEN > 1) ? $clog2(CODE_LEN) : 1;
     logic [BYTE_COUNT_WIDTH-1:0] byte_count;
     always_ff @(posedge CLK_50) begin
-        if (SW[0])
+        if (SW[9])
             byte_count <= '0;
         else begin
             if (current_state != SEND_DATA)
@@ -167,7 +167,7 @@ module send_guess #(
 
     // State register
     always @(posedge CLK_50) begin
-        if (SW[0])
+        if (SW[9])
             current_state <= IDLE;
         else
             current_state <= next_state;

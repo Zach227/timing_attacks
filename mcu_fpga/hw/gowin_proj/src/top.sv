@@ -2,11 +2,12 @@
 module top (
     input  wire logic CLK_50,
     input  wire logic CLK_inter,   // MCU-driven interconnect clock
-    input  wire logic [0:0]  SW,          // active-high reset
+    input  wire logic [9:0]  SW,          // active-high reset
     inout  logic [7:0]  CM,          // bidirectional bus
     output logic [7:0] LED
 );
-    localparam CODE_LEN = 2;
+    localparam CODE_LEN = 16;
+    localparam int CODE_LEN_WIDTH = (CODE_LEN > 1) ? $clog2(CODE_LEN) : 1;
 
     // Protocol bytes
     localparam [7:0] START_BYTE         = 8'h01;
@@ -56,7 +57,7 @@ module top (
     logic reset_guess_byte;
     
     always_ff @(posedge CLK_50) begin
-        if (SW[0]) begin
+        if (SW[9]) begin
             guess_byte <= START_GUESS_RANGE;
         end else begin
             if (reset_guess_byte) begin
@@ -76,12 +77,11 @@ module top (
     end
 
     // Byte counter
-    localparam int BYTE_COUNT_WIDTH = (CODE_LEN > 1) ? $clog2(CODE_LEN) : 1;
-    logic [BYTE_COUNT_WIDTH-1:0] byte_counter;
+    logic [CODE_LEN_WIDTH-1:0] byte_counter;
     logic inc_byte_counter;
 
     always_ff @(posedge CLK_50) begin
-        if (SW[0]) begin
+        if (SW[9]) begin
             byte_counter <= 2'd0;
         end else if (inc_byte_counter) begin
             byte_counter <= byte_counter + 1'b1;
@@ -94,7 +94,7 @@ module top (
     logic inc_delay_counter;
 
     always_ff @(posedge CLK_50) begin
-        if (SW[0])
+        if (SW[9])
             delay_counter <= 24'd0;
         else begin
             if (reset_delay_counter)
@@ -111,7 +111,7 @@ module top (
     logic reset_max;
 
     always_ff @(posedge CLK_50) begin
-        if (SW[0]) begin
+        if (SW[9]) begin
             max_delay <= '0;
             max_byte_guess <= 8'h00;
         end else if (reset_max) begin
@@ -131,27 +131,28 @@ module top (
     logic set_correct;
 
     // Set correct bytes
-    logic [BYTE_COUNT_WIDTH:0] correct_bytes_i;
+    logic [CODE_LEN_WIDTH:0] correct_bytes_i;
     always_ff @(posedge CLK_50) begin
-        if (SW[0]) begin
+        if (SW[9]) begin
             for (correct_bytes_i = 0; correct_bytes_i < CODE_LEN; correct_bytes_i++)
-                correct_bytes[correct_bytes_i] = START_GUESS_RANGE;
+                correct_bytes[correct_bytes_i] <= START_GUESS_RANGE;
         end
         else if (set_correct) begin
+            // Store the winning guess exactly once
             correct_bytes[byte_counter] <= max_byte_guess;
         end
     end
 
     // Set guess_word
-    logic [BYTE_COUNT_WIDTH:0] guess_word_i;
+    logic [CODE_LEN_WIDTH:0] guess_word_i;
     always_comb begin
-        if (SW[0]) begin
+        if (SW[9]) begin
             for (guess_word_i = 0; guess_word_i < CODE_LEN; guess_word_i++)
                 guess_word[guess_word_i] = START_GUESS_RANGE;
         end
         else begin
             for (guess_word_i = 0; guess_word_i < CODE_LEN; guess_word_i++) begin
-                if (guess_word_i == byte_counter)
+                if (guess_word_i == byte_counter && !set_correct)
                     guess_word[guess_word_i] = guess_byte;
                 else
                     guess_word[guess_word_i] = correct_bytes[guess_word_i];
@@ -246,13 +247,15 @@ module top (
 
     // State register
     always_ff @(posedge CLK_50) begin
-        if (SW[0])
+        if (SW[9])
             current_state <= IDLE;
         else
             current_state <= next_state;
     end
     
-    // LED output for debugging
-    assign LED = guess_byte;
+    // LED output
+    logic [CODE_LEN_WIDTH-1:0] led_select_index;
+    assign led_select_index = SW[CODE_LEN_WIDTH-1:0];
+    assign LED = guess_word[(CODE_LEN-1)-led_select_index];
 
 endmodule

@@ -24,15 +24,15 @@ void haha_inter_init(void) {
 /* Send a rising edge for the Chip interconnection clock */
 void haha_inter_clk_pos(void) {
   HAHA_CLK_INTER_PORT.OUTSET = HAHA_CLK_INTER_PIN;
-  _delay_ms(HAHA_CLK_INTER_DELAY);
-  // _delay_us(1);
+  // _delay_ms(HAHA_CLK_INTER_DELAY);
+  _delay_us(HAHA_CLK_INER_DELAY_US);
 }
 
 /* Send a falling edge for the Chip interconnection clock */
 void haha_inter_clk_neg(void) {
   HAHA_CLK_INTER_PORT.OUTCLR = HAHA_CLK_INTER_PIN;
-  _delay_ms(HAHA_CLK_INTER_DELAY);
-  // _delay_us(1);
+  // _delay_ms(HAHA_CLK_INTER_DELAY);
+  _delay_us(HAHA_CLK_INER_DELAY_US);
 }
 
 /* Receive a byte of data from the FPGA */
