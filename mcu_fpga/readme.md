@@ -16,11 +16,11 @@
 | 16 | 3.6 |
 | 32 | 7.25 |
 
-estimated time to brute force 1 byte = 0.225
-estimated time to make one guess = 0.225/250 = 0.0009s = 900 us
-estimated time to brute force 2 bytes = 900us * 250^2 = 56.25 seconds
-estimated time to brute force 4 bytes = 900us * 250^4 = 40.7 days
-estimated time to brute force 8 bytes = 900us * 250^8 = 441 million years
+estimated time to brute force 1 byte = 0.225  
+estimated time to make one guess = 0.225/250 = 0.0009s = 900 us  
+estimated time to brute force 2 bytes = 900us * 250^2 = 56.25 seconds  
+estimated time to brute force 4 bytes = 900us * 250^4 = 40.7 days  
+estimated time to brute force 8 bytes = 900us * 250^8 = 441 million years  
 
 
 
