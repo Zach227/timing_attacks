@@ -6,7 +6,7 @@ module top (
     inout  logic [7:0]  CM,          // bidirectional bus
     output logic [7:0] LED
 );
-    localparam CODE_LEN = 16;
+    localparam CODE_LEN = 32;
     localparam int CODE_LEN_WIDTH = (CODE_LEN > 1) ? $clog2(CODE_LEN) : 1;
 
     // Protocol bytes
@@ -24,7 +24,8 @@ module top (
         COUNT_DELAY,
         COMPARE_DELAY,
         SET_CORRECT_GUESS,
-        RESET_FOR_NEXT_BYTE
+        RESET_FOR_NEXT_BYTE,
+        FINISHED
     } state_t;
 
     state_t current_state, next_state;
@@ -137,8 +138,12 @@ module top (
             for (correct_bytes_i = 0; correct_bytes_i < CODE_LEN; correct_bytes_i++)
                 correct_bytes[correct_bytes_i] <= START_GUESS_RANGE;
         end
+        else if (correct_flag) begin
+            // The minus 2 is becuase there is a slight bug with storing the final byte when code is correct
+            correct_bytes[byte_counter] <= guess_byte-2; 
+        end
         else if (set_correct) begin
-            // Store the winning guess exactly once
+            // Store the correct byte based on delay
             correct_bytes[byte_counter] <= max_byte_guess;
         end
     end
@@ -256,6 +261,6 @@ module top (
     // LED output
     logic [CODE_LEN_WIDTH-1:0] led_select_index;
     assign led_select_index = SW[CODE_LEN_WIDTH-1:0];
-    assign LED = guess_word[(CODE_LEN-1)-led_select_index];
+    assign LED = correct_bytes[(CODE_LEN-1)-led_select_index];
 
 endmodule
