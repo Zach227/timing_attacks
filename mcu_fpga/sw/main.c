@@ -7,7 +7,7 @@
 #define END_BYTE 0x05
 
 #define SECRET_CODE_LEN 32
-const uint8_t SECRET_CODE[SECRET_CODE_LEN] = {
+const uint8_t SECRET_CODE[32] = {
 0xa3, 0xf9, 0x1c, 0x7e, 0x54, 0xb2, 0x89, 0xd0,
 0xe1, 0xc4, 0xfa, 0x66, 0x78, 0xd9, 0xb2, 0xc1,
 0x35, 0x0e, 0x9a, 0xfd, 0x44, 0x32, 0x1b, 0xe0,
@@ -81,7 +81,7 @@ int main() {
       haha_uart_print_str("Correct guess!\r\n");
       haha_uart_print_str("Secret Code was:");
       
-      for (uint8_t i = 0; i < index; i++) {
+      for (uint8_t i = 0; i < SECRET_CODE_LEN; i++) {
         haha_uart_print_u8_hex(receive_buffer[i]);
         haha_uart_print_str(" ");
       }
