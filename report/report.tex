@@ -77,15 +77,11 @@ This process is repeated for the other three digits, making sure to put the disc
 We implement two simple timing attacks on the HaHav3 board that exploit a non-constant compare function:
 
 \begin{enumerate}
-    \item \textbf{FPGA to MCU} - the MCU is the victim and the FPGA is the attacker. The FPGA counts cycles to measure compare time.
     \item \textbf{Human to FPGA} - the FPGA is the victim and a human is the attacker. The human uses an oscilloscope to measure compare time. 
+    \item \textbf{FPGA to MCU} - the MCU is the victim and the FPGA is the attacker. The FPGA counts cycles to measure compare time.
 \end{enumerate}
 
 % Both implementations involve guessing a secret key, measuring comparison time, and 
-
-\section{FPGA to MCU}
-
-TODO
 
 \section{Human to FPGA}
 
@@ -137,6 +133,82 @@ The fourth digit is not susceptible to the time attack because, whether correct 
           & 1022 & 172 \\
         \bottomrule
     \end{tabular}
+\end{table}
+
+\section{FPGA to MCU}
+
+In the FPGA to MCU attack, MCU on the HaHav3 board is programmed with a secret key, and listens for guesses fr0m the FPGA on the HaHav3 board. 
+When it receives a guess from the FPGA, it compares each byte of the guess with the key, and breaks as soon as it finds a byte that does not match.
+The MCU and FPGA communicate over the CM bus on the board. 
+This bus was setup up in previous labs to act as a one way communication channel for the MCY to send data to the FPGA.
+However, this timing attack requires two way communication, with the FPGA sending guesses to the MCU, and the MCU responding to say if the guess was correct.
+We created a simple protocol for the the FPGA and MCU to use. 
+Values 0x00 through 0x05 are reserved as op codes, meaning they are not possible bytes in the secret key:
+\begin{itemize}
+  \item 0x01 signal from FPGA that it is beginning a guess
+  \item 0x02 signal from MCU for FPGA to begin sending guesses
+  \item 0x03 signal from MCU that guess was correct
+  \item 0x04 signal from MCU that guess was incorrect
+  \item 0x05 signal from FPGA that it has finished sending its guess
+\end{itemize}
+
+A example of how the program would begin is shown In Figure \ref{fig:protocol}.
+When the FPGA is listening for a message from the MCU, assigns the CM bus as high impedance so there is no conflicts from both entities driving the bus simltaneously.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=2.5in]{figures/protocol.png}
+    \caption{Demonstration of a transaction between the MCU and the FPGA over the CM bus}
+    \label{fig:protocol}
+\end{figure}
+
+Once this communication protocol was devised and implemented, we were able to apply a timing attack. 
+For each byte in the secret key, the FPGA guesses all 250 possible values, and counts the delay between when it sends the end byte and when it receives a "NO" byte from the MCU.
+The byte value that had the longest delay is determined to be the correct byte, and this value is set as the first byte in all future guesses.
+This process is then repeated for all following bytes of the secret code. 
+
+This timimng attack is much more effective than a brute force attack would be. 
+We successfully guessed a 32 byte key using this timimng attack. 
+Table \ref{tab:byte_timing} shows how long the timing attack took to guess secret keys of different lengths.
+
+\begin{table}[h!]
+\centering
+\caption{Amount of time it took for our FPGA timing attack to guess keys of increasing lengths}
+\begin{tabular}{cc}
+\toprule
+\textbf{Number of Bytes} & \textbf{Time (s)} \\
+\midrule
+1  & 0.3  \\
+2  & 0.6  \\
+4  & 0.9  \\
+8  & 1.8  \\
+16 & 3.6  \\
+32 & 7.25 \\
+\bottomrule
+\end{tabular}
+\label{tab:byte_timing}
+\end{table}
+
+This data shows that the amount of time our attack takes increases linearly with the length of the secret key.
+This makes it possible to guess much longer keys than you could with a brute force strategy. 
+Based on the results in the Table \ref{tab:byte_timing}, we estimated that it takes about 225 milliseconds to guess all 250possible values for one byte of the key.
+That means it takes about about $250ms / 250 = 900\mu\text{s}$ for a single guessing transaction to take place between the MCU and the FPGA.
+If we extrapolate this information farther, we can estimate how long a brute force attack would take to guess keys of increasing length.
+
+\begin{table}[h!]
+\centering
+\caption{Estimated time it would take to brute force keys of increasing lengths with our setup}
+\begin{tabular}{cc}
+\toprule
+\textbf{Number of Bytes} & \textbf{Time} \\
+\midrule
+1  & 0.225 s \\
+2  & $900\,\mu\text{s} \times 250^{2} = 56.25 \text{ s}$  \\
+4  & $900\,\mu\text{s} \times 250^{4} = 40.7 \text{ days}$ \\
+8  & $900\,\mu\text{s} \times 250^{8} = 4.41 \times 10^{8} \text{ years}$  \\
+\bottomrule
+\end{tabular}
+\label{tab:byte_timing}
 \end{table}
 
 \section{Conclusion}
