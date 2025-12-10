@@ -11,7 +11,7 @@
 
 \begin{document}
 
-\title{Timing Attacks}
+\title{HAHAv3 Timing Attacks}
 
 % \author{\IEEEauthorblockN{Jacob Brown}
 % \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
@@ -43,20 +43,24 @@
 \maketitle
 
 \begin{abstract}
-We did a timing attack.
+We implemented two variations of a simple timing attack.
+In the first, a non-constant compare function on an FPGA is exploited by a human using an oscilloscope.
+In the second, a non-constant compare function on an MCU is exploited by an FPGA.
+Although these are just toy examples, they underscore the importance of mitigating timing attacks.
 \end{abstract}
 
 \begin{IEEEkeywords}
-timing attack, FPGA, constant-time
+timing attack, constant-time, side-channel, FPGA
 \end{IEEEkeywords}
 
 \section{Introduction}
 
 % brief intro to timing attacks
 Timing attacks are a type of side-channel attack.
-TODO more intro.
+The original research on timing attacks was published in 1996 by Paul Kocher, showing vulnerabilities of important algorithms such as RSA \cite{kocher_timing_attack}.
+Since 1996, research about timing attacks has expanded.
 
-To further learn about timing attacks, explored a timing attack that exploit a non-constant compare function to extract a secret key.
+To further learn about timing attacks, we explored a timing attack that exploits a non-constant compare function to extract a secret key.
 Our source of inspiration is Joe Grand, who demonstrated this simple timing attack using a microcontroller, four buttons, and an oscilloscope \cite{video_key}.
 The non-constant compare function is simply a compare function that exits as soon as a mismatch occurs (see the code snippet below).
 
@@ -74,7 +78,7 @@ We guess 26 strings, each simply a single letter repeated four times ("aaaa", "b
 The guessed string with the lowest compare time has the correct first digit.
 This process is repeated for the other three digits, making sure to put the discovered digits in front of the guessed digits.
 
-We implement two simple timing attacks on the HaHav3 board that exploit a non-constant compare function:
+We implement two simple timing attacks on the HAHAv3 board that exploit a non-constant compare function:
 
 \begin{enumerate}
     \item \textbf{Human to FPGA} - the FPGA is the victim and a human is the attacker. The human uses an oscilloscope to measure compare time. 
@@ -86,9 +90,9 @@ We implement two simple timing attacks on the HaHav3 board that exploit a non-co
 \section{Human to FPGA}
 
 % The purpose of the human-to-FPGA timing attack is to see if demonstrate a toy timing attack between a human and FPGA. % this sentence is kind of dumb
-For the human to FPGA timing attack, the non-constant compare function is implemented on the FPGA present on the HaHav3 board and a human carries out the attack. 
+For the human to FPGA timing attack, the non-constant compare function is implemented on the FPGA present on the HAHAv3 board and a human carries out the attack. 
 The FPGA compares an input guess to a secret key and indicates whether it is success or fail.
-A human uses the three buttons on the HaHav3 board to input a four pin guess and uses an oscilloscope to measure the time between the last button press and the compare function result.
+A human uses the three buttons on the HAHAv3 board to input a four pin guess and uses an oscilloscope to measure the time between the last button press and the compare function result.
 It is important to note that the FPGA waits until all four input values are received before beginning the compare function, so the final button press can act as a time reference for the start of the comparison function.
 
 An oscilloscope waveform capturing the first step of the attack is shown in Figure \ref{fig:digit0}.
@@ -137,10 +141,10 @@ The fourth digit is not susceptible to the time attack because, whether correct 
 
 \section{FPGA to MCU}
 
-In the FPGA to MCU attack, MCU on the HaHav3 board is programmed with a secret key, and listens for guesses fr0m the FPGA on the HaHav3 board. 
+In the FPGA to MCU attack, MCU on the HAHAv3 board is programmed with a secret key, and listens for guesses from the FPGA on the HAHAv3 board. 
 When it receives a guess from the FPGA, it compares each byte of the guess with the key, and breaks as soon as it finds a byte that does not match.
 The MCU and FPGA communicate over the CM bus on the board. 
-This bus was setup up in previous labs to act as a one way communication channel for the MCY to send data to the FPGA.
+This bus was set up in previous labs to act as a one way communication channel for the MCY to send data to the FPGA.
 However, this timing attack requires two way communication, with the FPGA sending guesses to the MCU, and the MCU responding to say if the guess was correct.
 We created a simple protocol for the the FPGA and MCU to use. 
 Values 0x00 through 0x05 are reserved as op codes, meaning they are not possible bytes in the secret key:
@@ -152,8 +156,8 @@ Values 0x00 through 0x05 are reserved as op codes, meaning they are not possible
   \item 0x05 signal from FPGA that it has finished sending its guess
 \end{itemize}
 
-A example of how the program would begin is shown In Figure \ref{fig:protocol}.
-When the FPGA is listening for a message from the MCU, assigns the CM bus as high impedance so there is no conflicts from both entities driving the bus simltaneously.
+An example of how the program would begin is shown In Figure \ref{fig:protocol}.
+When the FPGA is listening for a message from the MCU, assigns the CM bus as high impedance so there is no conflicts from both entities driving the bus simultaneously.
 
 \begin{figure}
     \centering
@@ -167,8 +171,8 @@ For each byte in the secret key, the FPGA guesses all 250 possible values, and c
 The byte value that had the longest delay is determined to be the correct byte, and this value is set as the first byte in all future guesses.
 This process is then repeated for all following bytes of the secret code. 
 
-This timimng attack is much more effective than a brute force attack would be. 
-We successfully guessed a 32 byte key using this timimng attack. 
+This timing attack is much more effective than a brute force attack would be. 
+We successfully guessed a 32 byte key using this timing attack. 
 Table \ref{tab:byte_timing} shows how long the timing attack took to guess secret keys of different lengths.
 
 \begin{table}[h!]
@@ -191,7 +195,7 @@ Table \ref{tab:byte_timing} shows how long the timing attack took to guess secre
 
 This data shows that the amount of time our attack takes increases linearly with the length of the secret key.
 This makes it possible to guess much longer keys than you could with a brute force strategy. 
-Based on the results in the Table \ref{tab:byte_timing}, we estimated that it takes about 225 milliseconds to guess all 250possible values for one byte of the key.
+Based on the results in the Table \ref{tab:byte_timing}, we estimated that it takes about 225 milliseconds to guess all 250 possible values for one byte of the key.
 That means it takes about about $250ms / 250 = 900\mu\text{s}$ for a single guessing transaction to take place between the MCU and the FPGA.
 If we extrapolate this information farther, we can estimate how long a brute force attack would take to guess keys of increasing length.
 
