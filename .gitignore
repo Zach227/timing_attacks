@@ -21,3 +21,5 @@ thesis.pdf
 nomenclature.tex
 venv
 mcu_fpga/hw/gowin_proj/impl/
+*/_minted-report/
+.DS_Store
